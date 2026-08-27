@@ -1,21 +1,27 @@
 /* منطق العرض المشترك بين الصفحة الرئيسية ونسخة الإشراف التربوي. */
 
-function renderBasicInfo(container) {
+async function loadSiteData() {
+  const res = await fetch("assets/data.json", { cache: "no-store" });
+  if (!res.ok) throw new Error("تعذّر تحميل بيانات الموقع");
+  return res.json();
+}
+
+function renderBasicInfo(container, basicInfo) {
   container.innerHTML = `
     <h2>البيانات الأساسية</h2>
     <dl>
-      <dt>الاسم</dt><dd>${BASIC_INFO.name}</dd>
-      <dt>الرقم الوظيفي</dt><dd>${BASIC_INFO.employeeId}</dd>
-      <dt>التخصص</dt><dd>${BASIC_INFO.specialization}</dd>
-      <dt>المؤهل</dt><dd>${BASIC_INFO.qualification}</dd>
-      <dt>المدرسة</dt><dd>${BASIC_INFO.school}</dd>
-      <dt>سنوات الخبرة</dt><dd>${BASIC_INFO.yearsOfExperience}</dd>
+      <dt>الاسم</dt><dd>${basicInfo.name}</dd>
+      <dt>الرقم الوظيفي</dt><dd>${basicInfo.employeeId}</dd>
+      <dt>التخصص</dt><dd>${basicInfo.specialization}</dd>
+      <dt>المؤهل</dt><dd>${basicInfo.qualification}</dd>
+      <dt>المدرسة</dt><dd>${basicInfo.school}</dd>
+      <dt>سنوات الخبرة</dt><dd>${basicInfo.yearsOfExperience}</dd>
     </dl>
   `;
 }
 
-function renderNav(container, activeId) {
-  container.innerHTML = CRITERIA.map((c) => {
+function renderNav(container, criteria, activeId) {
+  container.innerHTML = criteria.map((c) => {
     const classes = ["nav-item"];
     if (c.id === activeId) classes.push("active");
     if (c.pending) classes.push("pending");
@@ -27,11 +33,11 @@ function renderNav(container, activeId) {
   }).join("");
 }
 
-function renderOverview(container) {
+function renderOverview(container, criteria) {
   container.innerHTML = `
     <h2>نظرة عامة على المعايير</h2>
     <div class="overview-grid">
-      ${CRITERIA.map((c) => {
+      ${criteria.map((c) => {
         if (c.pending) {
           return `<div class="overview-card pending">
             <span class="crit-num">${c.id}</span>
@@ -47,8 +53,8 @@ function renderOverview(container) {
   `;
 }
 
-function renderCriterion(container, id) {
-  const c = CRITERIA.find((x) => x.id === id);
+function renderCriterion(container, criteria, id) {
+  const c = criteria.find((x) => x.id === id);
   if (!c || c.pending) {
     container.innerHTML = `<div class="empty-state">هذا المعيار بانتظار الإضافة لاحقًا.</div>`;
     return;
@@ -75,17 +81,25 @@ function renderCriterion(container, id) {
   `;
 }
 
-function initPage({ basicInfoEl, navEl, contentEl }) {
-  renderBasicInfo(basicInfoEl);
+async function initPage({ basicInfoEl, navEl, contentEl }) {
+  let data;
+  try {
+    data = await loadSiteData();
+  } catch (err) {
+    contentEl.innerHTML = `<div class="empty-state">تعذّر تحميل بيانات الموقع. حاولي تحديث الصفحة.</div>`;
+    return;
+  }
+
+  renderBasicInfo(basicInfoEl, data.basicInfo);
 
   function route() {
     const hash = window.location.hash.replace("#criterion-", "");
     const id = parseInt(hash, 10);
-    renderNav(navEl, id || null);
+    renderNav(navEl, data.criteria, id || null);
     if (id) {
-      renderCriterion(contentEl, id);
+      renderCriterion(contentEl, data.criteria, id);
     } else {
-      renderOverview(contentEl);
+      renderOverview(contentEl, data.criteria);
     }
   }
 

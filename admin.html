@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>لوحة الإدارة — ملف الأداء الوظيفي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <div class="viewer-gate" id="tokenGate" style="display: none;">
+    <div class="gate-box">
+      <h2>لوحة الإدارة</h2>
+      <p>
+        أدخلي رمز الوصول الشخصي (Personal Access Token) من حسابك في GitHub لمرة واحدة —
+        سيُحفظ في متصفحك فقط ولن يُرسل لأي جهة غير GitHub.
+      </p>
+      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx" autofocus />
+      <br />
+      <button id="tokenGateBtn">دخول</button>
+      <p id="gateError" style="color:#b3261e; font-size:0.85rem;"></p>
+      <p style="font-size:0.8rem;">
+        لإنشاء الرمز: GitHub → Settings → Developer settings → Personal access tokens →
+        Generate new token (classic) → فعّلي صلاحية <strong>repo</strong> فقط.
+      </p>
+    </div>
+  </div>
+
+  <div id="adminMain" style="display: none;">
+    <div class="admin-toolbar">
+      <div>
+        <strong>لوحة إدارة ملف الأداء الوظيفي</strong>
+        <span id="statusMsg" class="status-msg"></span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <a class="btn btn-secondary" href="index.html">عرض الموقع</a>
+        <button class="btn btn-secondary" id="reloadBtn">إعادة تحميل</button>
+        <button class="btn btn-primary" id="saveBtn">حفظ التغييرات</button>
+        <button class="btn btn-danger" id="signOutBtn">تسجيل خروج</button>
+      </div>
+    </div>
+
+    <main class="admin-main">
+      <section class="basic-info" id="adminBasicInfoSection">
+        <h2>البيانات الأساسية</h2>
+        <div id="adminBasicInfo"></div>
+      </section>
+
+      <section>
+        <h2>المعايير والشواهد</h2>
+        <div id="adminCriteria"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/js/github-store.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
